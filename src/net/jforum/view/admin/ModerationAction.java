@@ -42,34 +42,41 @@
  */
 package net.jforum.view.admin;
 
-import net.jforum.dao.DataAccessDriver;
-import net.jforum.dao.PostDAO;
-import net.jforum.dao.TopicDAO;
+import java.sql.Connection;
+
+import javax.servlet.http.HttpServletResponse;
+
+import net.jforum.ActionServletRequest;
+import net.jforum.Command;
 import net.jforum.entities.Post;
 import net.jforum.entities.Topic;
+import net.jforum.model.DataAccessDriver;
+import net.jforum.model.PostModel;
+import net.jforum.model.TopicModel;
 import net.jforum.repository.ForumRepository;
 import net.jforum.repository.PostRepository;
 import net.jforum.util.preferences.ConfigKeys;
 import net.jforum.util.preferences.SystemGlobals;
-import net.jforum.util.preferences.TemplateKeys;
 import net.jforum.view.forum.common.AttachmentCommon;
 import net.jforum.view.forum.common.PostCommon;
 import net.jforum.view.forum.common.TopicsCommon;
 import net.jforum.view.forum.common.ViewCommon;
+import freemarker.template.SimpleHash;
+import freemarker.template.Template;
 
 /**
  * @author Rafael Steil
- * @version $Id: ModerationAction.java,v 1.6 2005/03/26 04:11:18 rafaelsteil Exp $
+ * @version $Id: ModerationAction.java,v 1.4.6.1 2005/03/28 15:59:53 rafaelsteil Exp $
  */
-public class ModerationAction extends AdminCommand
+public class ModerationAction extends Command
 {
 	/**
 	 * @see net.jforum.Command#list()
 	 */
 	public void list() throws Exception
 	{
-		this.setTemplateName(TemplateKeys.MODERATION_ADMIN_LIST);
-		this.context.put("infoList", DataAccessDriver.getInstance().newModerationDAO().categoryPendingModeration());
+		this.context.put("moduleAction", "moderation_list.htm");
+		this.context.put("infoList", DataAccessDriver.getInstance().newModerationModel().categoryPendingModeration());
 	}
 	
 	public void view() throws Exception
@@ -79,9 +86,9 @@ public class ModerationAction extends AdminCommand
 		int start = ViewCommon.getStartPage();
 		int count = SystemGlobals.getIntValue(ConfigKeys.POST_PER_PAGE);
 		
-		this.setTemplateName(TemplateKeys.MODERATION_ADMIN_VIEW);
+		this.context.put("moduleAction", "moderation_list_posts.htm");
 		this.context.put("forum", ForumRepository.getForum(forumId));
-		this.context.put("topics", DataAccessDriver.getInstance().newModerationDAO().topicsByForum(
+		this.context.put("topics", DataAccessDriver.getInstance().newModerationModel().topicsByForum(
 				forumId, start, count));
 	}
 	
@@ -89,7 +96,7 @@ public class ModerationAction extends AdminCommand
 	{
 		String[] posts = this.request.getParameterValues("post_id");
 		if (posts != null) {
-			TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
+			TopicModel tm = DataAccessDriver.getInstance().newTopicModel();
 			
 			for (int i = 0; i < posts.length; i++) {
 				int postId = Integer.parseInt(posts[i]);
@@ -100,22 +107,22 @@ public class ModerationAction extends AdminCommand
 				}
 				
 				if ("aprove".startsWith(status)) {
-					Post p = DataAccessDriver.getInstance().newPostDAO().selectById(postId);
+					Post p = DataAccessDriver.getInstance().newPostModel().selectById(postId);
 					Topic t = tm.selectRaw(p.getTopicId());
 					
-					DataAccessDriver.getInstance().newModerationDAO().aprovePost(postId);
+					DataAccessDriver.getInstance().newModerationModel().aprovePost(postId);
 					TopicsCommon.updateBoardStatus(t, postId, t.getFirstPostId() == postId,
-							tm, DataAccessDriver.getInstance().newForumDAO());
+							tm, DataAccessDriver.getInstance().newForumModel());
 					
 					
-					DataAccessDriver.getInstance().newUserDAO().incrementPosts(p.getUserId());
+					DataAccessDriver.getInstance().newUserModel().incrementPosts(p.getUserId());
 					
 					if (SystemGlobals.getBoolValue(ConfigKeys.POSTS_CACHE_ENABLED)) {
 						PostRepository.append(p.getTopicId(), PostCommon.preparePostForDisplay(p));
 					}
 				}
 				else {
-					PostDAO pm = DataAccessDriver.getInstance().newPostDAO();
+					PostModel pm = DataAccessDriver.getInstance().newPostModel();
 					Post post = pm.selectById(postId);
 					pm.delete(post);
 					
@@ -123,12 +130,25 @@ public class ModerationAction extends AdminCommand
 					
 					int totalPosts = tm.getTotalPosts(post.getTopicId());
 					if (totalPosts == 0) {
-						TopicsCommon.deleteTopic(post.getTopicId(), post.getForumId());
+						TopicsCommon.deleteTopic(post.getTopicId(), post.getForumId(), true);
 					}
 				}
 			}
 		}
 		
 		this.view();
+	}
+
+	/**
+	 * @see net.jforum.Command#process(net.jforum.ActionServletRequest, javax.servlet.http.HttpServletResponse, java.sql.Connection, freemarker.template.SimpleHash)
+	 */
+	public Template process(ActionServletRequest request, HttpServletResponse response, Connection conn,
+			SimpleHash context) throws Exception
+	{
+		if (AdminAction.isAdmin()) {
+			super.process(request, response, conn, context);
+		}
+		
+		return AdminAction.adminBaseTemplate();
 	}
 }

@@ -56,7 +56,7 @@ import freemarker.template.SimpleHash;
 
 /**
  * @author Rafael Steil
- * @version $Id: TopicSpammer.java,v 1.11 2005/03/24 16:42:03 rafaelsteil Exp $
+ * @version $Id: TopicSpammer.java,v 1.10.8.1 2005/03/28 15:59:47 rafaelsteil Exp $
  */
 public class TopicSpammer extends Spammer 
 {

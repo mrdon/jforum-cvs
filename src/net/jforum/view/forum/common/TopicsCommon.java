@@ -52,12 +52,12 @@ import org.apache.log4j.Logger;
 
 import net.jforum.JForum;
 import net.jforum.SessionFacade;
-import net.jforum.dao.DataAccessDriver;
-import net.jforum.dao.ForumDAO;
-import net.jforum.dao.TopicDAO;
 import net.jforum.entities.Forum;
 import net.jforum.entities.Topic;
 import net.jforum.entities.UserSession;
+import net.jforum.model.DataAccessDriver;
+import net.jforum.model.ForumModel;
+import net.jforum.model.TopicModel;
 import net.jforum.repository.ForumRepository;
 import net.jforum.repository.SecurityRepository;
 import net.jforum.repository.TopicRepository;
@@ -74,7 +74,7 @@ import net.jforum.view.forum.ModerationHelper;
  * General utilities methods for topic manipulation.
  * 
  * @author Rafael Steil
- * @version $Id: TopicsCommon.java,v 1.9 2005/03/26 04:11:22 rafaelsteil Exp $
+ * @version $Id: TopicsCommon.java,v 1.8.12.1 2005/03/28 15:59:55 rafaelsteil Exp $
  */
 public class TopicsCommon 
 {
@@ -92,7 +92,7 @@ public class TopicsCommon
 	 */
 	public static List topicsByForum(int forumId, int start) throws Exception
 	{
-		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
+		TopicModel tm = DataAccessDriver.getInstance().newTopicModel();
 		int topicsPerPage = SystemGlobals.getIntValue(ConfigKeys.TOPICS_PER_PAGE);
 		List topics = null;
 		
@@ -214,7 +214,7 @@ public class TopicsCommon
 	 * @param tm A TopicModel instance
 	 * @throws Exception
 	 */
-	public static void notifyUsers(Topic t, TopicDAO tm) throws Exception
+	public static void notifyUsers(Topic t, TopicModel tm) throws Exception
 	{
 		if (SystemGlobals.getBoolValue(ConfigKeys.MAIL_NOTIFY_ANSWERS)) {
 			try {
@@ -245,7 +245,7 @@ public class TopicsCommon
 	 * @param fm A ForumModel instance
 	 * @throws Exception
 	 */
-	public static void updateBoardStatus(Topic t, int lastPostId, boolean firstPost, TopicDAO tm, ForumDAO fm) throws Exception
+	public static void updateBoardStatus(Topic t, int lastPostId, boolean firstPost, TopicModel tm, ForumModel fm) throws Exception
 	{
 		t.setLastPostId(lastPostId);
 		tm.update(t);
@@ -273,24 +273,30 @@ public class TopicsCommon
 	 * This method will remove the topic from the database,
 	 * clear the entry frm the cache and update the last 
 	 * post info for the associated forum.
-	 * 
 	 * @param topicId The topic id to remove
+	 * @param fromModeration Set to <code>true</code> if the method call
+	 * is related to message approving action.
+	 * 
 	 * @throws Exception
 	 */
-	public static void deleteTopic(int topicId, int forumId) throws Exception
+	public static void deleteTopic(int topicId, int forumId, boolean fromModeration) throws Exception
 	{
-		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
-		ForumDAO fm = DataAccessDriver.getInstance().newForumDAO();
+		TopicModel tm = DataAccessDriver.getInstance().newTopicModel();
+		ForumModel fm = DataAccessDriver.getInstance().newForumModel();
 		
 		Topic topic = new Topic();
 		topic.setId(topicId);
 		tm.delete(topic);
 
-		// Updates the Recent Topics if it contains this topic
-		TopicRepository.popTopic(topic);
-		TopicRepository.loadMostRecentTopics();
-
-		tm.removeSubscriptionByTopic(topicId);
-		fm.decrementTotalTopics(forumId, 1);
+		if (!fromModeration) {
+			// Updates the Recent Topics if it contains this topic
+			TopicRepository.popTopic(topic);
+			TopicRepository.loadMostRecentTopics();
+	
+			tm.removeSubscriptionByTopic(topicId);
+			fm.decrementTotalTopics(forumId, 1);
+		}
+		
+		ForumRepository.reloadForum(forumId);
 	}
 }

@@ -36,54 +36,25 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  * 
- * Created on 24/10/2004 14:37:26
+ * Created on Feb 13, 2005 11:32:30 PM
  * The JForum Project
  * http://www.jforum.net
  */
-package net.jforum.util.rss;
+package net.jforum.drivers.postgresql;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import net.jforum.util.preferences.ConfigKeys;
-import net.jforum.util.preferences.SystemGlobals;
+import java.util.List;
 
 /**
- * General utilities for RSS manipulation.
- * 
- * @author Rafael Steil
- * @version $Id: RSSUtils.java,v 1.2.6.1 2005/03/28 15:59:48 rafaelsteil Exp $
+ * @author Andowson Chang
+ * @version $Id: ModerationModel.java,v 1.3.8.1 2005/03/28 15:59:50 rafaelsteil Exp $
  */
-public class RSSUtils 
-{
+public class ModerationModel extends net.jforum.drivers.generic.ModerationModel
+{	
 	/**
-	 * Formats a given date to the expected RSS format
-	 * @param date The date to format
-	 * @return The formated date
+	 * @see net.jforum.model.ModerationModel#topicsByForum(int, int, int)
 	 */
-	public static String formatDate(Date date)
+	public List topicsByForum(int forumId, int start, int count) throws Exception
 	{
-		SimpleDateFormat df = new SimpleDateFormat(
-				SystemGlobals.getValue(ConfigKeys.RSS_DATE_TIME_FORMAT),
-				Locale.ENGLISH);
-		return df.format(date);
-	}
-	
-	/**
-	 * Formats a given date to the expected RSS format
-	 * @param date The date to format
-	 * @return The formated date, or the original input if some parsing exception occurs
-	 */
-	public static String formatDate(String date)
-	{
-		try {
-			SimpleDateFormat df = new SimpleDateFormat(SystemGlobals.getValue(ConfigKeys.DATE_TIME_FORMAT));
-			return formatDate(df.parse(date));
-		}
-		catch (ParseException e) {
-			return date;
-		}
-	}
+		return super.topicsByForum(forumId, count, (start > 0 ? start + count : 0));
+	}	
 }

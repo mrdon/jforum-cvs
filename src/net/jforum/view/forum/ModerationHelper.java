@@ -49,26 +49,25 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import net.jforum.JForum;
-import net.jforum.dao.DataAccessDriver;
-import net.jforum.dao.ForumDAO;
-import net.jforum.dao.TopicDAO;
 import net.jforum.entities.Topic;
+import net.jforum.model.DataAccessDriver;
+import net.jforum.model.ForumModel;
+import net.jforum.model.TopicModel;
 import net.jforum.repository.ForumRepository;
 import net.jforum.repository.PostRepository;
 import net.jforum.repository.SecurityRepository;
 import net.jforum.repository.TopicRepository;
 import net.jforum.security.SecurityConstants;
 import net.jforum.util.I18n;
-import net.jforum.util.preferences.TemplateKeys;
 import net.jforum.view.forum.common.ForumCommon;
 
 /**
  * @author Rafael Steil
- * @version $Id: ModerationHelper.java,v 1.18 2005/03/26 04:11:15 rafaelsteil Exp $
+ * @version $Id: ModerationHelper.java,v 1.14.6.1 2005/03/28 15:59:52 rafaelsteil Exp $
  */
 public class ModerationHelper 
 {
-	private static Logger logger = Logger.getLogger(ModerationHelper.class);
+	private static final Logger logger = Logger.getLogger(ModerationHelper.class);
 	
 	public static final int SUCCESS = 1;
 	public static final int FAILURE = 2;
@@ -130,7 +129,7 @@ public class ModerationHelper
 		String[] topics = JForum.getRequest().getParameterValues("topic_id");
 		
 		List forumsList = new ArrayList();
-		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
+		TopicModel tm = DataAccessDriver.getInstance().newTopicModel();
 		
 		List topicsToDelete = new ArrayList();
 		
@@ -148,7 +147,7 @@ public class ModerationHelper
 			
 			tm.deleteTopics(topicsToDelete);
 			
-			ForumDAO fm = DataAccessDriver.getInstance().newForumDAO();
+			ForumModel fm = DataAccessDriver.getInstance().newForumModel();
 			TopicRepository.loadMostRecentTopics();
 			
 			// Reload changed forums
@@ -181,16 +180,17 @@ public class ModerationHelper
 				ids[i] = Integer.parseInt(topics[i]);
 			}
 			
-			DataAccessDriver.getInstance().newTopicDAO().lockUnlock(ids, status);
+			DataAccessDriver.getInstance().newTopicModel().lockUnlock(ids, status);
 			
 			// Clear the cache
-			Topic t = DataAccessDriver.getInstance().newTopicDAO().selectById(ids[0]);
+			Topic t = DataAccessDriver.getInstance().newTopicModel().selectById(ids[0]);
 			TopicRepository.clearCache(t.getForumId());
 		}
 	}
 	
 	private void moveTopics() throws Exception
 	{
+		JForum.getContext().put("moduleAction", "post_move.htm");
 		JForum.getContext().put("persistData", JForum.getRequest().getParameter("persistData"));
 		JForum.getContext().put("allCategories", ForumCommon.getAllCategoriesAndForums(false));
 		
@@ -199,7 +199,7 @@ public class ModerationHelper
 			// If forum_id is null, get from the database
 			String forumId = JForum.getRequest().getParameter("forum_id");
 			if (forumId == null) {
-				forumId = Integer.toString(DataAccessDriver.getInstance().newTopicDAO().selectById(
+				forumId = Integer.toString(DataAccessDriver.getInstance().newTopicModel().selectById(
 						Integer.parseInt(topics[0])).getForumId());
 			}
 			
@@ -228,7 +228,7 @@ public class ModerationHelper
 				int fromForumId = Integer.parseInt(JForum.getRequest().getParameter("forum_id"));
 				int toForumId = Integer.parseInt(JForum.getRequest().getParameter("to_forum"));
 				
-				DataAccessDriver.getInstance().newForumDAO().moveTopics(topics.split(","), fromForumId, toForumId);
+				DataAccessDriver.getInstance().newForumModel().moveTopics(topics.split(","), fromForumId, toForumId);
 				
 				ForumRepository.reloadForum(fromForumId);
 				ForumRepository.reloadForum(toForumId);
@@ -250,10 +250,10 @@ public class ModerationHelper
 		return status;
 	}
 	
-	public String moderationDone(String redirectUrl)
+	public void moderationDone(String redirectUrl)
 	{
+		JForum.getContext().put("moduleAction", "message.htm");
 		JForum.getContext().put("message", I18n.getMessage("Moderation.ModerationDone", new String[] { redirectUrl }));
-		return TemplateKeys.MODERATION_DONE;
 	}
 	
 	public void denied()
@@ -263,7 +263,7 @@ public class ModerationHelper
 	
 	public void denied(String message)
 	{
-		JForum.getRequest().setAttribute("template", TemplateKeys.MODERATION_DENIED);
+		JForum.getContext().put("moduleAction", "message.htm");
 		JForum.getContext().put("message", message);		
 	}
 }

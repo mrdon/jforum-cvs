@@ -49,7 +49,7 @@ package net.jforum.util.preferences;
 * configuration keys under eclipse ;-)
 * 
 * @author Pieter Olivier
-* @version $Id: ConfigKeys.java,v 1.54 2005/03/26 04:11:20 rafaelsteil Exp $
+* @version $Id: ConfigKeys.java,v 1.49.4.1 2005/03/28 15:59:51 rafaelsteil Exp $
 */
 
 public class ConfigKeys {
@@ -82,7 +82,6 @@ public class ConfigKeys {
 	public static final String DATABASE_ERROR_PAGE = "database.error.page";
 	public static final String DATABASE_MYSQL_UNICODE = "mysql.unicode";
 	public static final String DATABASE_MYSQL_ENCODING = "mysql.encoding";
-	public static final String DATABASE_AUTO_KEYS = "database.support.autokeys";
 	
 	public static final String LOGIN_AUTHENTICATOR = "login.authenticator";
 
@@ -93,8 +92,7 @@ public class ConfigKeys {
 	public static final String SQL_QUERIES_GENERIC = "sql.queries.generic";
 	public static final String SQL_QUERIES_DRIVER = "sql.queries.driver";
 
-	public static final String TEMPLATES_MAPPING = "templates.mapping";
-	public static final String TEMPLATE_DIR = "template.dir";
+	public static final String TEMPLATE_NAME = "templateName";
 	public static final String ENCODING = "encoding";
 	public static final String SERVLET_NAME = "servlet.name";
 	public static final String DEFAULT_CONFIG = "default.config";
@@ -192,17 +190,6 @@ public class ConfigKeys {
 	
 	public static final String REGISTRATION_ENABLED = "registration.enabled";
 	public static final String USERNAME_MAX_LENGTH = "username.max.length";
-
-	public static final String QUARTZ_CONTEXT = "org.quartz.context.";
-	public static final String SEARCH_INDEXING_ENABLED = "search.indexing.enabled";
-	public static final String SEARCH_INDEXER_IMPLEMENTATION = "search.indexer.implementation";
-	public static final String SEARCH_INDEXER_QUARTZ_CONFIG = "search.indexer.quartz.config";
-	public static final String SEARCH_INDEXER_CRON_EXPRESSON = "indexer.cron.expression";
-	public static final String SEARCH_LAST_POST_ID = "last.post.id";
-	public static final String SEARCH_INDEXER_STEP = "indexer.step";
-	
-	public static final String TOPIC_TIME_FIELD = "topic.time.field";
-	public static final String EXTENSION_FIELD = "extension.field";
 	
 	private ConfigKeys() {}
 }

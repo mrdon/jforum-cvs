@@ -70,7 +70,7 @@ import freemarker.template.Template;
  * TODO: should do some refactoring to send a personalized email to each user. 
  * 
  * @author Rafael Steil
- * @version $Id: Spammer.java,v 1.10 2005/03/24 03:40:44 rafaelsteil Exp $
+ * @version $Id: Spammer.java,v 1.9.6.1 2005/03/28 15:59:47 rafaelsteil Exp $
  */
 public class Spammer 
 {

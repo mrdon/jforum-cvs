@@ -53,9 +53,9 @@ import net.jforum.JForum;
 import net.jforum.SessionFacade;
 import net.jforum.entities.User;
 import net.jforum.entities.UserSession;
-import net.jforum.dao.DataAccessDriver;
-import net.jforum.dao.UserDAO;
-import net.jforum.dao.UserSessionDAO;
+import net.jforum.model.DataAccessDriver;
+import net.jforum.model.UserModel;
+import net.jforum.model.UserSessionModel;
 import net.jforum.repository.RankingRepository;
 import net.jforum.repository.SecurityRepository;
 import net.jforum.security.SecurityConstants;
@@ -68,13 +68,12 @@ import net.jforum.util.mail.EmailSenderTask;
 import net.jforum.util.mail.LostPasswordSpammer;
 import net.jforum.util.preferences.ConfigKeys;
 import net.jforum.util.preferences.SystemGlobals;
-import net.jforum.util.preferences.TemplateKeys;
 import net.jforum.view.forum.common.UserCommon;
 import net.jforum.view.forum.common.ViewCommon;
 
 /**
  * @author Rafael Steil
- * @version $Id: UserAction.java,v 1.37 2005/03/26 04:11:15 rafaelsteil Exp $
+ * @version $Id: UserAction.java,v 1.34.6.1 2005/03/28 15:59:52 rafaelsteil Exp $
  */
 public class UserAction extends Command 
 {
@@ -86,12 +85,12 @@ public class UserAction extends Command
 		if (SessionFacade.isLogged() 
 				&& tmpId == this.request.getIntParameter("user_id")) {
 			int userId = this.request.getIntParameter("user_id");
-			UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+			UserModel um = DataAccessDriver.getInstance().newUserModel();
 			User u = um.selectById(userId);
 
 			this.context.put("u", u);
 			this.context.put("action", "editSave");
-			this.setTemplateName(TemplateKeys.USER_EDIT);
+			this.context.put("moduleAction", "user_form.htm");
 		} 
 		else {
 			this.profile();
@@ -122,7 +121,7 @@ public class UserAction extends Command
 	
 	private void registrationDisabled()
 	{
-		this.setTemplateName(TemplateKeys.USER_REGISTRATION_DISABLED);
+		this.context.put("moduleAction", "message.htm");
 		this.context.put("message", I18n.getMessage("User.registrationDisabled"));
 	}
 
@@ -134,7 +133,7 @@ public class UserAction extends Command
 		}
 		
 		this.context.put("action", "insertSave");
-		this.setTemplateName(TemplateKeys.USER_INSERT);
+		this.context.put("moduleAction", "user_new.htm");
 		this.context.put("username", this.request.getParameter("username"));
 		this.context.put("email", this.request.getParameter("email"));
 		
@@ -153,7 +152,7 @@ public class UserAction extends Command
 		}
 		
 		User u = new User();
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		UserModel um = DataAccessDriver.getInstance().newUserModel();
 
 		String username = this.request.getParameter("username");
 		String password = this.request.getParameter("password");
@@ -213,7 +212,7 @@ public class UserAction extends Command
 				e.printStackTrace();
 			}
 
-			this.setTemplateName(TemplateKeys.USER_INSERT_ACTIVATE_MAIL);
+			this.context.put("moduleAction", "message.htm");
 			this.context.put("message", I18n.getMessage("User.GoActivateAccountMessage"));
 		} 
 		else {
@@ -228,7 +227,7 @@ public class UserAction extends Command
 
 		String message = "";
 
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		UserModel um = DataAccessDriver.getInstance().newUserModel();
 		User u = um.selectById(userId);
 
 		boolean isOk = um.validateActivationKeyHash(userId, hash);
@@ -239,7 +238,7 @@ public class UserAction extends Command
 		} 
 		else {
 			message = I18n.getMessage("User.invalidActivationKey");
-			this.setTemplateName(TemplateKeys.USER_INVALID_ACTIVATION);
+			this.context.put("moduleAction", "message.htm");
 			this.context.put("message", message);
 		}
 
@@ -274,7 +273,7 @@ public class UserAction extends Command
 		String message = I18n.getMessage("User.RegistrationCompleteMessage", 
 				new Object[] { profilePage, homePage });
 		this.context.put("message", message);
-		this.setTemplateName(TemplateKeys.USER_REGISTRATION_COMPLETE);
+		this.context.put("moduleAction", "registration_complete.htm");
 	}
 
 	public void validateLogin() throws Exception 
@@ -307,7 +306,7 @@ public class UserAction extends Command
 					SessionFacade.remove(sessionId);
 				}
 				else {
-					UserSessionDAO sm = DataAccessDriver.getInstance().newUserSessionDAO();
+					UserSessionModel sm = DataAccessDriver.getInstance().newUserSessionModel();
 					tmpUs = sm.selectById(userSession, JForum.getConnection());
 				}
 
@@ -349,7 +348,7 @@ public class UserAction extends Command
 		// Invalid login
 		if (validInfo == false) {
 			this.context.put("invalidLogin", "1");
-			this.setTemplateName(TemplateKeys.USER_VALIDATE_LOGIN);
+			this.context.put("moduleAction", "forum_login.htm");
 
 			if (this.request.getParameter("returnPath") != null) {
 				this.context.put("returnPath",
@@ -366,21 +365,21 @@ public class UserAction extends Command
 
 	private User validateLogin(String name, String password) throws Exception 
 	{
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		UserModel um = DataAccessDriver.getInstance().newUserModel();
 		User user = um.validateLogin(name, password);
 		return user;
 	}
 
 	public void profile() throws Exception 
 	{
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		UserModel um = DataAccessDriver.getInstance().newUserModel();
 
 		User u = um.selectById(this.request.getIntParameter("user_id"));
 		if (u.getId() == 0) {
 			this.userNotFound();
 		}
 		else {
-			this.setTemplateName(TemplateKeys.USER_PROFILE);
+			this.context.put("moduleAction", "user_profile.htm");
 			this.context.put("karmaEnabled", SecurityRepository.canAccess(SecurityConstants.PERM_KARMA_ENABLED));
 			this.context.put("rank", new RankingRepository());
 			this.context.put("u", u);
@@ -390,7 +389,7 @@ public class UserAction extends Command
 	private void userNotFound()
 	{
 		this.context.put("message", I18n.getMessage("User.notFound"));
-		this.setTemplateName(TemplateKeys.USER_NOT_FOUND);
+		this.context.put("moduleAction", "message.htm");
 	}
 
 	public void logout() throws Exception 
@@ -420,19 +419,19 @@ public class UserAction extends Command
 			this.context.put("returnPath", this.request.getParameter("returnPath"));
 		}
 
-		this.setTemplateName(TemplateKeys.USER_LOGIN);
+		this.context.put("moduleAction", "forum_login.htm");
 	}
 
 	// Lost password form
 	public void lostPassword() 
 	{
-		this.setTemplateName(TemplateKeys.USER_LOSTPASSWORD);
+		this.context.put("moduleAction", "lost_password.htm");
 	}
 	
 	public User prepareLostPassword(String username, String email) throws Exception
 	{
 		User user = null;
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		UserModel um = DataAccessDriver.getInstance().newUserModel();
 
 		if (email != null && !email.trim().equals("")) {
 			username = um.getUsernameByEmail(email);
@@ -481,7 +480,7 @@ public class UserAction extends Command
 			logger.warn("Error while sending email: " + e);
 		}
 
-		this.setTemplateName(TemplateKeys.USER_LOSTPASSWORD_SEND);
+		this.context.put("moduleAction", "message.htm");
 		this.context.put("message", I18n.getMessage(
 										"PasswordRecovery.emailSent",
 										new String[] { 
@@ -496,7 +495,7 @@ public class UserAction extends Command
 	{
 		String hash = this.request.getParameter("hash");
 
-		this.setTemplateName(TemplateKeys.USER_RECOVERPASSWORD);
+		this.context.put("moduleAction", "recover_password.htm");
 		this.context.put("recoverHash", hash);
 	}
 
@@ -506,11 +505,11 @@ public class UserAction extends Command
 		String email = this.request.getParameter("email");
 
 		String message = "";
-		
-		boolean isOk = DataAccessDriver.getInstance().newUserDAO().validateLostPasswordHash(email, hash);
+
+		boolean isOk = DataAccessDriver.getInstance().newUserModel().validateLostPasswordHash(email, hash);
 		if (isOk) {
 			String password = this.request.getParameter("newPassword");
-			DataAccessDriver.getInstance().newUserDAO().saveNewPassword(MD5.crypt(password), email);
+			DataAccessDriver.getInstance().newUserModel().saveNewPassword(MD5.crypt(password), email);
 
 			message = I18n.getMessage("PasswordRecovery.ok",
 					new String[] { this.request.getContextPath()
@@ -521,19 +520,19 @@ public class UserAction extends Command
 			message = I18n.getMessage("PasswordRecovery.invalidData");
 		}
 
-		this.setTemplateName(TemplateKeys.USER_RECOVERPASSWORD_VALIDATE);
+		this.context.put("moduleAction", "message.htm");
 		this.context.put("message", message);
 	}
 
 		
 	public void list() throws Exception
 	{
-		int start = this.preparePagination(DataAccessDriver.getInstance().newUserDAO().getTotalUsers());
+		int start = this.preparePagination(DataAccessDriver.getInstance().newUserModel().getTotalUsers());
 		int usersPerPage = SystemGlobals.getIntValue(ConfigKeys.USERS_PER_PAGE);
 							
-		List users = DataAccessDriver.getInstance().newUserDAO().selectAll(start ,usersPerPage);
+		List users = DataAccessDriver.getInstance().newUserModel().selectAll(start ,usersPerPage);
 		this.context.put("users", users);
-		this.setTemplateName(TemplateKeys.USER_LIST);
+		this.context.put("moduleAction", "user_list.htm");
 	}
 	
 	/**
@@ -542,13 +541,12 @@ public class UserAction extends Command
 	 */
 	public void searchKarma() throws Exception
 	{
-		int start = this.preparePagination(DataAccessDriver.getInstance().newUserDAO().getTotalUsers());
+		int start = this.preparePagination(DataAccessDriver.getInstance().newUserModel().getTotalUsers());
 		int usersPerPage = SystemGlobals.getIntValue(ConfigKeys.USERS_PER_PAGE);
-		
 		//Load all users with your karma
-		List users = DataAccessDriver.getInstance().newUserDAO().selectAllWithKarma(start ,usersPerPage);
+		List users = DataAccessDriver.getInstance().newUserModel().selectAllWithKarma(start ,usersPerPage);
 		this.context.put("users", users);
-		this.setTemplateName(TemplateKeys.USER_SEARCH_KARMA);
+		this.context.put("moduleAction", "user_list_karma.htm");
 	}
 	
 	
