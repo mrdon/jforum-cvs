@@ -48,13 +48,13 @@ import java.util.List;
 import net.jforum.JForum;
 import net.jforum.cache.CacheEngine;
 import net.jforum.cache.Cacheable;
-import net.jforum.dao.DataAccessDriver;
 import net.jforum.entities.Smilie;
 import net.jforum.exceptions.SmiliesLoadException;
+import net.jforum.model.DataAccessDriver;
 
 /**
  * @author Rafael Steil
- * @version $Id: SmiliesRepository.java,v 1.9 2005/03/26 04:10:59 rafaelsteil Exp $
+ * @version $Id: SmiliesRepository.java,v 1.7.8.1 2005/03/29 04:36:19 rafaelsteil Exp $
  */
 public class SmiliesRepository implements Cacheable
 {
@@ -74,7 +74,7 @@ public class SmiliesRepository implements Cacheable
 	public static void loadSmilies()
 	{
 		try {
-			cache.add(FQN, ENTRIES, DataAccessDriver.getInstance().newSmilieDAO().selectAll());
+			cache.add(FQN, ENTRIES, DataAccessDriver.getInstance().newSmilieModel().selectAll());
 			contexted = false;
 		}
 		catch (Exception e) {
