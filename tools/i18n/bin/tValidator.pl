@@ -45,7 +45,7 @@ use strict;
 ################################################################################
 # Author        : Jakob Vad Nielsen
 # Created       : 18 dec. 2006
-# Last modified : $Id: tValidator.pl,v 1.1.2.2 2006/12/18 09:23:15 lazee Exp $
+# Last modified : $Id: tValidator.pl,v 1.1.2.3 2006/12/18 13:48:19 lazee Exp $
 ################################################################################
 # Perl script that validates a JForum 2.1.7 translation
 #
@@ -211,6 +211,9 @@ sub printReport {
    print "\nREPORT:\n";
    print "-----------------------------------------\n";
    print $report;
+   if ($warnings + $errors + $missing_trans == 0) {
+        print "Success!!! This seems to be a complete translation :) \n";
+   }
    print "-----------------------------------------\n";
    print "Warnings              : ".$warnings."\n";
    print "Errors                : ".$errors."\n";   
