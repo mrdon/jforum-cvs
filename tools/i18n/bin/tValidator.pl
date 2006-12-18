@@ -45,9 +45,11 @@ use strict;
 ################################################################################
 # Author        : Jakob Vad Nielsen
 # Created       : 18 dec. 2006
-# Last modified : $Id: tValidator.pl,v 1.1.2.1 2006/12/18 09:13:38 lazee Exp $
+# Last modified : $Id: tValidator.pl,v 1.1.2.2 2006/12/18 09:23:15 lazee Exp $
 ################################################################################
 # Perl script that validates a JForum 2.1.7 translation
+#
+# usage: perl tValidator.pl <path to jforum> <locale>
 ################################################################################
 
 my $trans_dir = "WEB-INF/config/languages";
