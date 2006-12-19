@@ -1,3 +1,8 @@
+function sendEmail(s1, s2)
+{
+	document.location = 'mailto:' + showEmail(s1, s2);
+}
+
 function handleBbCode(evt)
 {
 	var e = evt || window.event;
