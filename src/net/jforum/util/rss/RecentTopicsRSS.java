@@ -56,7 +56,7 @@ public class RecentTopicsRSS extends TopicRSS
 		this.forumLink = ViewCommon.getForumLink();
 		
 		this.rss = new RSS(title, description, SystemGlobals.getValue(ConfigKeys.ENCODING), 
-				this.forumLink + "recentTopics/"
+				this.forumLink + "recentTopics/list"
 				+ SystemGlobals.getValue(ConfigKeys.SERVLET_EXTENSION));
 		
 		super.prepareRSS();
