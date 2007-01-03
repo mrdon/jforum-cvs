@@ -399,7 +399,7 @@ function validatePostForm(f)
 				
 				<#if setType?default(true) && canCreatePolls?default(false)>
 					<#if poll?exists>
-						<#assign pollQuestion = poll.label/>
+						<#assign pollQuestion = poll.label?default("")?html/>
 						<#assign pollLength = poll.length/>
 					<#else>
 						<#assign pollQuestion = ""/>
@@ -420,10 +420,11 @@ function validatePostForm(f)
 					<#if poll?exists>
 						<#assign optionCount = 0/>
 						<#list poll.options as option>
+							<#assign optionText = option.text?default("")?html/>
 							<tr id="pollOption">
 								<td align="center"><span class="gen"><b>${I18n.getMessage("PostForm.pollOption")}</b></span></td>
 								<td>
-									<input type="text" id="pollOption${option.id}" name="poll_option_${option.id}" maxlength="255" size="50" value="${option.text}"></input>
+									<input type="text" id="pollOption${option.id}" name="poll_option_${option.id}" maxlength="255" size="50" value="${optionText}"></input>
 									<input type="button" onclick="javascript:deletePollOption(this)" value="${I18n.getMessage("PostForm.pollDeleteOption")}"></input>
 								</td>
 							</tr>
