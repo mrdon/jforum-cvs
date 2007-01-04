@@ -62,7 +62,7 @@ import java.io.IOException;
  * presentation actions must extend this class. 
  * 
  * @author Rafael Steil
- * @version $Id: Command.java,v 1.25 2006/09/09 21:32:36 rafaelsteil Exp $
+ * @version $Id: Command.java,v 1.25.4.1 2007/01/04 02:28:38 rafaelsteil Exp $
  */
 public abstract class Command 
 {
@@ -142,8 +142,8 @@ public abstract class Command
 
         try {
             return JForumExecutionContext.templateConfig().getTemplate(
-                    new StringBuffer(SystemGlobals.getValue(ConfigKeys.TEMPLATE_DIR)).
-                    append('/').append(this.templateName).toString());
+                new StringBuffer(SystemGlobals.getValue(ConfigKeys.TEMPLATE_DIR)).
+                append('/').append(this.templateName).toString());
         }
         catch (IOException e) {
             throw new ForumException( e);
