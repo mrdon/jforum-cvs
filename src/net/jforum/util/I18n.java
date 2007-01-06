@@ -42,6 +42,7 @@
  */
 package net.jforum.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -65,23 +66,33 @@ import org.apache.log4j.Logger;
  * 
  * @author Rafael Steil
  * @author James Yong
- * @version $Id: I18n.java,v 1.33 2006/08/24 01:07:06 rafaelsteil Exp $
+ * @version $Id: I18n.java,v 1.33.4.1 2007/01/06 14:28:31 rafaelsteil Exp $
  */
 public class I18n
 {
-    private static final Logger logger = Logger.getLogger(I18n.class);
+	private static final Logger logger = Logger.getLogger(I18n.class);
 
 	private static I18n classInstance = new I18n();
+
 	private static Map messagesMap = new HashMap();
+
 	private static Properties localeNames = new Properties();
+
 	private static String defaultName;
+
 	private static String baseDir;
+
 	private static List watching = new ArrayList();
+
 	public static final String CANNOT_DELETE_GROUP = "CannotDeleteGroup";
+
 	public static final String CANNOT_DELETE_CATEGORY = "CannotDeleteCategory";
+
 	public static final String CANNOT_DELETE_BANNER = "CannotDeleteBanner";
 
-	private I18n() {}
+	private I18n()
+	{
+	}
 
 	/**
 	 * Gets the singleton
@@ -97,7 +108,7 @@ public class I18n
 	 * Load the default I18n file
 	 * 
 	 */
-	public static synchronized void load() 
+	public static synchronized void load()
 	{
 		baseDir = SystemGlobals.getApplicationResourceDir() + "/" + SystemGlobals.getValue(ConfigKeys.LOCALES_DIR);
 
@@ -112,7 +123,7 @@ public class I18n
 			defaultName = custom;
 		}
 	}
-	
+
 	public static void changeBoardDefault(String newDefaultLanguage)
 	{
 		load(newDefaultLanguage, SystemGlobals.getValue(ConfigKeys.I18N_DEFAULT_ADMIN));
@@ -121,12 +132,10 @@ public class I18n
 
 	private static void loadLocales()
 	{
-		try
-		{
+		try {
 			localeNames.load(new FileInputStream(baseDir + SystemGlobals.getValue(ConfigKeys.LOCALES_NAMES)));
 		}
-		catch (IOException e)
-		{
+		catch (IOException e) {
 			throw new ForumException(e);
 		}
 	}
@@ -156,14 +165,20 @@ public class I18n
 			p.putAll((Properties) messagesMap.get(mergeWith));
 		}
 
-		try
-		{
-			p.load(new FileInputStream(baseDir + localeNames.getProperty(localeName)));
+		try {
+			String filename = baseDir + localeNames.getProperty(localeName);
+			
+			// If the requested locale does not exist, use the default
+			if (!new File(filename).exists()) {
+				filename = baseDir + localeNames.getProperty(SystemGlobals.getValue(ConfigKeys.I18N_DEFAULT_ADMIN));
+			}
+			
+			p.load(new FileInputStream(filename));
 		}
-		catch (IOException e)
-		{
+		catch (IOException e) {
 			throw new ForumException(e);
 		}
+		
 		messagesMap.put(localeName, p);
 
 		watchForChanges(localeName);
@@ -203,10 +218,10 @@ public class I18n
 					public void fileChanged(String filename)
 					{
 						if (logger.isDebugEnabled()) {
-                            logger.info("Reloading i18n for " + localeName);
-                        }
+							logger.info("Reloading i18n for " + localeName);
+						}
 
-                        I18n.load(localeName, SystemGlobals.getValue(ConfigKeys.I18N_DEFAULT), true);
+						I18n.load(localeName, SystemGlobals.getValue(ConfigKeys.I18N_DEFAULT), true);
 					}
 				}, baseDir + localeNames.getProperty(localeName), fileChangesDelay);
 			}
@@ -216,11 +231,14 @@ public class I18n
 	/**
 	 * Gets a I18N (internationalized) message.
 	 * 
-	 * @param localeName The locale name to retrieve the messages from
-	 * @param messageName The message name to retrieve. Must be a valid entry into the file specified by
-	 * <code>i18n.file</code> property.
-	 * @param params Parameters needed by some messages. The messages with extra parameters are
-	 * formated according to {@link java.text.MessageFormat}specification
+	 * @param localeName
+	 *            The locale name to retrieve the messages from
+	 * @param messageName
+	 *            The message name to retrieve. Must be a valid entry into the file specified by
+	 *            <code>i18n.file</code> property.
+	 * @param params
+	 *            Parameters needed by some messages. The messages with extra parameters are
+	 *            formated according to {@link java.text.MessageFormat}specification
 	 * @return String With the message
 	 */
 	public static String getMessage(String localeName, String messageName, Object params[])
@@ -230,15 +248,17 @@ public class I18n
 
 	/**
 	 * @see #getMessage(String, String, Object[])
-     * @param messageName String
-     * @param params Object
-     * @return String
+	 * @param messageName
+	 *            String
+	 * @param params
+	 *            Object
+	 * @return String
 	 */
 	public static String getMessage(String messageName, Object params[])
 	{
 		String lang = "";
 		UserSession us = SessionFacade.getUserSession();
-		
+
 		if (us != null && us.getLang() != null) {
 			lang = us.getLang();
 		}
@@ -257,12 +277,13 @@ public class I18n
 	 *            The message name to retrieve. Must be a valid entry into the file specified by
 	 *            <code>i18n.file</code> property.
 	 * @return String With the message
-     * @param localeName String
+	 * @param localeName
+	 *            String
 	 */
 	public static String getMessage(String localeName, String m)
 	{
 		if (!messagesMap.containsKey(localeName)) {
-            load(localeName);
+			load(localeName);
 		}
 
 		return (((Properties) messagesMap.get(localeName)).getProperty(m));
@@ -281,28 +302,30 @@ public class I18n
 
 		return getMessage(us.getLang(), m);
 	}
-	
+
 	/**
-	 * Gets the language name for the current request.
-	 * The method will first look at {@link UserSession#getLang()}  and use 
-	 * it if any value is found. Otherwise, the default board language will be used
+	 * Gets the language name for the current request. The method will first look at
+	 * {@link UserSession#getLang()} and use it if any value is found. Otherwise, the default board
+	 * language will be used
+	 * 
 	 * @return String
 	 */
 	public static String getUserLanguage()
 	{
 		UserSession us = SessionFacade.getUserSession();
-		
+
 		if (us == null || us.getLang() == null || us.getLang().trim().equals("")) {
 			return defaultName;
 		}
-		
+
 		return us.getLang();
 	}
 
 	/**
 	 * Check whether the language is loaded in i18n.
 	 * 
-	 * @param language String
+	 * @param language
+	 *            String
 	 * @return boolean
 	 */
 	public static boolean contains(String language)

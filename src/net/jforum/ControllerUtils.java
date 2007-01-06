@@ -73,7 +73,7 @@ import org.apache.log4j.Logger;
  * Common methods used by the controller.
  * 
  * @author Rafael Steil
- * @version $Id: ControllerUtils.java,v 1.31 2006/08/27 01:21:55 rafaelsteil Exp $
+ * @version $Id: ControllerUtils.java,v 1.31.4.1 2007/01/06 14:23:35 rafaelsteil Exp $
  */
 public class ControllerUtils
 {
@@ -294,12 +294,10 @@ public class ControllerUtils
 		else if (ConfigKeys.TYPE_SSO.equals(SystemGlobals.getValue(ConfigKeys.AUTHENTICATION_TYPE))) {
 			SSO sso;
 			
-			try
-			{
+			try {
 				sso = (SSO) Class.forName(SystemGlobals.getValue(ConfigKeys.SSO_IMPLEMENTATION)).newInstance();
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				throw new ForumException(e);
 			}
 
