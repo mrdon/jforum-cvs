@@ -75,7 +75,7 @@ import net.jforum.view.forum.common.ViewCommon;
 
 /**
  * @author Rafael Steil
- * @version $Id: ForumAction.java,v 1.57.2.1 2007/01/23 20:27:24 lazee Exp $
+ * @version $Id: ForumAction.java,v 1.57.2.2 2007/01/23 20:51:26 lazee Exp $
  */
 public class ForumAction extends Command
 {
@@ -265,9 +265,14 @@ public class ForumAction extends Command
 
 		List allTopics = DataAccessDriver.getInstance().newSearchDAO().search(sd);
 		for (Iterator iter = allTopics.iterator(); iter.hasNext();) {
-			Topic t = (Topic) iter.next();
-			Map attr = (Map) SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING);
-			attr.put(new Integer(t.getId()), new Long(t.getLastPostDate().getTime()));
+			// LaZee will fix!
+			//Topic t = (Topic) iter.next();
+			//Map attr = (Map) SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING);
+			//attr.put(new Integer(t.getId()), new Long(t.getLastPostDate().getTime()));
+			Topic t = (Topic)iter.next();
+			
+			((Map)SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING)).put(new Integer(t.getId()), 
+				new Long(t.getLastPostDate().getTime()));
 		}
 
 		if (forumId != null) {
