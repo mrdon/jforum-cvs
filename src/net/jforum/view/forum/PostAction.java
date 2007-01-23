@@ -103,7 +103,7 @@ import freemarker.template.SimpleHash;
 
 /**
  * @author Rafael Steil
- * @version $Id: PostAction.java,v 1.163.2.2 2007/01/23 20:51:26 lazee Exp $
+ * @version $Id: PostAction.java,v 1.163.2.3 2007/01/23 20:57:10 lazee Exp $
  */
 public class PostAction extends Command 
 {
@@ -194,9 +194,6 @@ public class PostAction extends Command
 		topic.setTotalViews(topic.getTotalViews() + 1);
 
 		if (us.getUserId() != anonymousUser) {
-			// LaZee will fix
-			//((Map)SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING)).put(new Integer(topic.getId()),
-			//		new Long(topic.getLastPostDate().getTime()));
 			((Map)SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING)).put(new Integer(topic.getId()),
 					new Long(System.currentTimeMillis()));
 		}
