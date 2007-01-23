@@ -78,7 +78,7 @@ import freemarker.template.SimpleHash;
  * General utilities methods for topic manipulation.
  * 
  * @author Rafael Steil
- * @version $Id: TopicsCommon.java,v 1.34 2006/10/01 15:45:57 rafaelsteil Exp $
+ * @version $Id: TopicsCommon.java,v 1.34.4.1 2007/01/23 20:27:26 lazee Exp $
  */
 public class TopicsCommon 
 {
@@ -144,12 +144,15 @@ public class TopicsCommon
 
 			if (checkUnread && t.getLastPostDate().getTime() > lastVisit) {
 				if (topicsTracking.containsKey(new Integer(t.getId()))) {
-					read = (((Long)topicsTracking.get(new Integer(t.getId()))).longValue() > t.getLastPostDate().getTime());
+					long readTopics = ((Long)topicsTracking.get(new Integer(t.getId()))).longValue();
+					long topicLastPostDate = t.getLastPostDate().getTime();
+					read = (readTopics <= topicLastPostDate);
 				}
 			}
 			else {
 				read = true;
 			}
+					
 			
 			if (t.getTotalReplies() + 1 > postsPerPage) {
 				t.setPaginate(true);
@@ -289,7 +292,7 @@ public class TopicsCommon
 	{
 		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
         //TODO use or delete
-        ForumDAO fm = DataAccessDriver.getInstance().newForumDAO();
+        //ForumDAO fm = DataAccessDriver.getInstance().newForumDAO();
 		
 		Topic topic = new Topic();
 		topic.setId(topicId);

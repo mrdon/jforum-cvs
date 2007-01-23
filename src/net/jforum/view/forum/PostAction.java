@@ -44,8 +44,8 @@ package net.jforum.view.forum;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -96,19 +96,18 @@ import net.jforum.view.forum.common.PollCommon;
 import net.jforum.view.forum.common.PostCommon;
 import net.jforum.view.forum.common.TopicsCommon;
 import net.jforum.view.forum.common.ViewCommon;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import freemarker.template.SimpleHash;
 
 /**
  * @author Rafael Steil
- * @version $Id: PostAction.java,v 1.163 2006/12/08 21:48:04 lazee Exp $
+ * @version $Id: PostAction.java,v 1.163.2.1 2007/01/23 20:27:24 lazee Exp $
  */
 public class PostAction extends Command 
 {
-    private static final Logger log = Logger.getLogger(PostAction.class);
-    
+  
     public PostAction() {}
     
     public PostAction(RequestContext request, SimpleHash templateContext)
@@ -196,7 +195,7 @@ public class PostAction extends Command
 
 		if (us.getUserId() != anonymousUser) {
 			((Map)SessionFacade.getAttribute(ConfigKeys.TOPICS_TRACKING)).put(new Integer(topic.getId()),
-				new Long(System.currentTimeMillis()));
+					new Long(topic.getLastPostDate().getTime()));
 		}
 		
 		boolean karmaEnabled = SecurityRepository.canAccess(SecurityConstants.PERM_KARMA_ENABLED);
@@ -321,7 +320,8 @@ public class PostAction extends Command
 		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
 		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
 
-        UserSession us = SessionFacade.getUserSession();
+		// TODO To be deleted?
+        //UserSession us = SessionFacade.getUserSession();
 		User u = um.selectById(this.request.getIntParameter("user_id"));
 		
 		if (u.getId() == 0) {
@@ -396,7 +396,7 @@ public class PostAction extends Command
 		PostDAO pm = DataAccessDriver.getInstance().newPostDAO();
 
         //TODO um not user. remove or use?
-		UserDAO um = DataAccessDriver.getInstance().newUserDAO();
+		// UserDAO um = DataAccessDriver.getInstance().newUserDAO();
 		TopicDAO tm = DataAccessDriver.getInstance().newTopicDAO();
 
 		int userId = SessionFacade.getUserSession().getUserId();
@@ -840,7 +840,7 @@ public class PostAction extends Command
 				topicDao.update(t);
 				
                 //TODO u not user. remove or use?
-				User u = DataAccessDriver.getInstance().newUserDAO().selectById(p.getUserId());
+				//User u = DataAccessDriver.getInstance().newUserDAO().selectById(p.getUserId());
 				
 				if (changeType) {
 					TopicRepository.addTopic(t);
