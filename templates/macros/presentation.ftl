@@ -137,13 +137,13 @@
 						<option value="-1" selected="selected">${I18n.getMessage("ForumIndex.goToSelectAForum")}</option>				
 						
 						<#list allCategories as category>
-							<option value="-1">&nbsp;</option>
-							<option value="-1">${category.name}</option>
-							<option value="-1">-------------</option>
-							
+                            <optgroup label="${category.name}">
+		
 							<#list category.getForums() as forum>
 								<option value="${forum.id}">${forum.name}</option>
 							</#list>
+							
+                            </optgroup>
 						</#list>
 					</select>
 					&nbsp;
