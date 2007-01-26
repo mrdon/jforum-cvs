@@ -1,6 +1,6 @@
 <#setting number_format = "#"/>
-${user.username} ±z¦n,
+${user.username} æ‚¨å¥½,
 
-±z¦b ${forumName} ¦³­Ó¨p¤H°T®§. ±z¥i¥H§Q¥Î¤U¦Cªº³sµ²¨Ó¾\Åª¥¦:
+æ‚¨æœ‰å€‹ç§äººè¨Šæ¯åœ¨ ${forumName}. æ‚¨å¯ä»¥åˆ©ç”¨ä¸‹åˆ—çš„ç¶²å€ä¾†é–±è®€å®ƒ:
 
 ${path}

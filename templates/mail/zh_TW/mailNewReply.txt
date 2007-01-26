@@ -1,11 +1,18 @@
-<#setting number_format = "#"/>
-±z¦n,
+<#assign hasMessageContents = message?exists/>
+<#if hasMessageContents>
+	<#assign hasMessageContents = user?exists && user.notifyText()/>
+</#if>
+<#if !hasMessageContents>
+æ‚¨å¥½,
 
-±z·|¦¬¨ì³o«Ê«H¬O¦]¬°¦b ${forumName} ªº "${topic.title}" ¥DÃD±q±z¤W¦¸«ô³X«á¤w¸gÀò±o¦^À³¤F.
-±z¥i¥H¨Ï¥Î¤U¦Cªººô§}¨Ó¾\Åª¸Ó°T®§. ª½¨ì±z¾\Åª¸Ó¥DÃD¬°¤î±z¤£·|¦A¦¬¨ì¨ä¥Lªº³qª¾.
+æ‚¨æœƒæ”¶åˆ°é€™å°ä¿¡æ˜¯å› ç‚º "${topic.title}" é€™å€‹ä¸»é¡Œå¾žæ‚¨ä¸Šæ¬¡æ‹œè¨ªå¾Œå·²ç¶“ç²å¾—å›žæ‡‰äº†.
+æ‚¨å¯ä½¿ç”¨ä¸‹åˆ—çš„ç¶²å€ä¾†é–±è®€è©²è¨Šæ¯. åœ¨æ‚¨é–±è®€è©²ä¸»é¡Œä¹‹å‰,æ‚¨å°‡ä¸æœƒå†æ”¶åˆ°æ›´å¤šçš„é€šçŸ¥ä¿¡.
 
 ${path}
 
-¦pªG±z¤£·Q¦A¦¬¨ì³o­Ó¥DÃDªº³qª¾«H,½Ð¿é¤J¥H¤Uªººô§}
+å¦‚æžœæ‚¨ä¸æƒ³å†æ”¶åˆ°é€™å€‹ä¸»é¡Œçš„é€šçŸ¥ä¿¡,è«‹é»žé¸ä»¥ä¸‹çš„ç¶²å€
 
 ${unwatch}
+<#else>
+<#include "mailNewReplyWithContents.txt"/>
+</#if>
