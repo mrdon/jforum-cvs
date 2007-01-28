@@ -82,6 +82,7 @@
 								<ul class="ul">
 									<li class="li"><a href="/index.jsp" class="white">Home</a>
 									<li class="li"><a href="/community.jsp" class="white">Forum</a>
+									<li class="li"><a href="/jira" class="white">Bug Tracker (JIRA)</a>
 									<li class="li"><a href="/Wiki.jsp" class="white">Documentation</a>
 									<li class="li"><a href="/install.jsp" class="white">How do I install JForum?</a>
 									<li class="li"><a href="/doc/HowToContribute" class="white">How to contribute</a>
