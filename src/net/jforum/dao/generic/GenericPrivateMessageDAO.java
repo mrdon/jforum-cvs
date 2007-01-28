@@ -42,6 +42,7 @@
  */
 package net.jforum.dao.generic;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,7 +66,7 @@ import net.jforum.util.preferences.SystemGlobals;
 
 /**
  * @author Rafael Steil
- * @version $Id: GenericPrivateMessageDAO.java,v 1.10.4.1 2007/01/28 21:08:22 rafaelsteil Exp $
+ * @version $Id: GenericPrivateMessageDAO.java,v 1.10.4.2 2007/01/28 21:46:49 rafaelsteil Exp $
  */
 public class GenericPrivateMessageDAO extends AutoKeys implements net.jforum.dao.PrivateMessageDAO
 {
@@ -127,36 +128,54 @@ public class GenericPrivateMessageDAO extends AutoKeys implements net.jforum.dao
 	}
 
 	/**
-	 * @see net.jforum.dao.PrivateMessageDAO#delete(net.jforum.entities.PrivateMessage[])
+	 * @see net.jforum.dao.PrivateMessageDAO#delete(net.jforum.entities.PrivateMessage[], int)
 	 */
-	public void delete(PrivateMessage[] pm)
+	public void delete(PrivateMessage[] pm, int userId)
 	{
-		PreparedStatement p = null;
+		PreparedStatement deleteMessage = null;
 		PreparedStatement deleteText = null;
+		PreparedStatement isDeleteAllowed = null;
 		
 		try {
-			p = JForumExecutionContext.getConnection().prepareStatement(
-					SystemGlobals.getSql("PrivateMessageModel.delete"));
-			p.setInt(2, pm[0].getFromUser().getId());
-			p.setInt(3, pm[0].getToUser().getId());
-
-			deleteText = JForumExecutionContext.getConnection().prepareStatement(
-					SystemGlobals.getSql("PrivateMessagesModel.deleteText"));
+			Connection connection = JForumExecutionContext.getConnection();
+			
+			deleteMessage = connection.prepareStatement(SystemGlobals.getSql("PrivateMessageModel.delete"));
+			deleteText = connection.prepareStatement(SystemGlobals.getSql("PrivateMessagesModel.deleteText"));
+			
+			isDeleteAllowed = connection.prepareStatement(SystemGlobals.getSql("PrivateMessagesModel.isDeleteAllowed"));
+			isDeleteAllowed.setInt(2, userId);
+			isDeleteAllowed.setInt(3, userId);
 
 			for (int i = 0; i < pm.length; i++) {
-				deleteText.setInt(1, pm[i].getId());
-				deleteText.executeUpdate();
+				PrivateMessage currentMessage = pm[i];
+				
+				isDeleteAllowed.setInt(1, currentMessage.getId());
 
-				p.setInt(1, pm[i].getId());
-				p.executeUpdate();
+				ResultSet rs = null;
+				
+				try {
+					rs = isDeleteAllowed.executeQuery();
+					
+					if (rs.next()) {
+						deleteText.setInt(1, currentMessage.getId());
+						deleteText.executeUpdate();
+		
+						deleteMessage.setInt(1, currentMessage.getId());
+						deleteMessage.executeUpdate();
+					}
+				}
+				finally {
+					DbUtils.close(rs);
+				}
 			}
 		}
 		catch (SQLException e) {
 			throw new DatabaseException(e);
 		}
 		finally {
-			DbUtils.close(p);
+			DbUtils.close(deleteMessage);
 			DbUtils.close(deleteText);
+			DbUtils.close(isDeleteAllowed);
 		}
 	}
 

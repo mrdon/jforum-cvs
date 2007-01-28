@@ -56,7 +56,7 @@ import net.jforum.util.preferences.SystemGlobals;
 
 /**
  * @author Rafael Steil
- * @version $Id: GenericSmilieDAO.java,v 1.8 2006/08/23 02:13:41 rafaelsteil Exp $
+ * @version $Id: GenericSmilieDAO.java,v 1.8.4.1 2007/01/28 21:46:49 rafaelsteil Exp $
  */
 public class GenericSmilieDAO extends AutoKeys implements net.jforum.dao.SmilieDAO
 {
@@ -86,7 +86,7 @@ public class GenericSmilieDAO extends AutoKeys implements net.jforum.dao.SmilieD
 	}
 
 	/**
-	 * @see net.jforum.repository.SmilieDAO#delete(int)
+	 * @see net.jforum.repository.SmilieDAO#delete(int, int)
 	 */
 	public void delete(int id)
 	{

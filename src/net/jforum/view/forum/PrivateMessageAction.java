@@ -67,7 +67,7 @@ import net.jforum.view.forum.common.ViewCommon;
 
 /**
  * @author Rafael Steil
- * @version $Id: PrivateMessageAction.java,v 1.39 2006/12/06 21:56:27 rafaelsteil Exp $
+ * @version $Id: PrivateMessageAction.java,v 1.39.2.1 2007/01/28 21:46:50 rafaelsteil Exp $
  */
 public class PrivateMessageAction extends Command
 {
@@ -345,10 +345,6 @@ public class PrivateMessageAction extends Command
 		if (ids != null && ids.length > 0) {
 			PrivateMessage[] deleteList = new PrivateMessage[ids.length];
 			
-			User u = new User();
-			UserSession userSession = SessionFacade.getUserSession();
-			u.setId(userSession.getUserId());
-	
 			int unreadCount = 0;
 			PrivateMessageDAO dao = DataAccessDriver.getInstance().newPrivateMessageDAO();
 			
@@ -362,7 +358,9 @@ public class PrivateMessageAction extends Command
 				deleteList[i] = pm;
 			}
 			
-			dao.delete(deleteList);
+			UserSession userSession = SessionFacade.getUserSession();
+			
+			dao.delete(deleteList, userSession.getUserId());
 			
 			// Subtracts the number of delete messages
 			int total = userSession.getPrivateMessages() - unreadCount;

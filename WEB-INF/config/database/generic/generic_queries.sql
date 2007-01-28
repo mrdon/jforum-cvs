@@ -473,12 +473,13 @@ PrivateMessageModel.add = INSERT INTO jforum_privmsgs ( privmsgs_type, privmsgs_
 	
 PrivateMessagesModel.addText = INSERT INTO jforum_privmsgs_text ( privmsgs_id, privmsgs_text ) VALUES (?, ?)
 	
-PrivateMessageModel.delete = DELETE FROM jforum_privmsgs WHERE privmsgs_id = ? \
+PrivateMessagesModel.isDeleteAllowed = SELECT 1 FROM jforum_privmsgs WHERE privmsgs_id = ? \
 	AND ( \
 	    (privmsgs_from_userid = ? AND privmsgs_type = 2) \
 	    OR (privmsgs_to_userid = ? AND privmsgs_type IN(0, 1, 5)) \
 	)
-	
+
+PrivateMessageModel.delete = DELETE FROM jforum_privmsgs WHERE privmsgs_id = ?	
 PrivateMessagesModel.deleteText = DELETE FROM jforum_privmsgs_text WHERE privmsgs_id = ?
 
 PrivateMessageModel.baseListing = SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, u.user_id, u.username \
