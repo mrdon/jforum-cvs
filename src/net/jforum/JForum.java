@@ -79,7 +79,7 @@ import freemarker.template.Template;
  * Front Controller.
  * 
  * @author Rafael Steil
- * @version $Id: JForum.java,v 1.108 2006/12/11 00:57:10 rafaelsteil Exp $
+ * @version $Id: JForum.java,v 1.108.2.1 2007/02/04 16:24:54 rafaelsteil Exp $
  */
 public class JForum extends JForumBaseServlet 
 {
@@ -301,26 +301,7 @@ public class JForum extends JForumBaseServlet
 
 	private Command retrieveCommand(String moduleClass) throws Exception
 	{
-		Command c;
-		
-		if (modulesCache.containsKey(moduleClass)) {
-			c = (Command)modulesCache.get(moduleClass);
-		}
-		else {
-			// Ok, there isn't yet a cache for the requested module.
-			// Instantiate it, add to cache and return
-			synchronized (modulesCache) {
-				if (modulesCache.containsKey(moduleClass)) {
-					c = (Command)modulesCache.get(moduleClass);
-				}
-				else {
-					c = (Command)Class.forName(moduleClass).newInstance();
-					modulesCache.put(moduleClass, c);
-				}
-			}
-		}
-		
-		return c;
+		return (Command)Class.forName(moduleClass).newInstance();
 	}
 	
 	/** 
