@@ -72,7 +72,7 @@ import net.jforum.util.preferences.SystemGlobals;
 
 /**
  * @author Rafael Steil
- * @version $Id: GenericTopicDAO.java,v 1.18 2006/10/09 00:54:10 rafaelsteil Exp $
+ * @version $Id: GenericTopicDAO.java,v 1.18.4.1 2007/02/07 00:58:56 rafaelsteil Exp $
  */
 public class GenericTopicDAO extends AutoKeys implements net.jforum.dao.TopicDAO
 {
@@ -234,9 +234,11 @@ public class GenericTopicDAO extends AutoKeys implements net.jforum.dao.TopicDAO
 
 			rs = p.executeQuery();
 			List topics = new ArrayList();
+			
 			while (rs.next()) {
 				Topic t = new Topic();
 				t.setId(rs.getInt("topic_id"));
+				t.setForumId(forumId);
 
 				topics.add(t);
 			}

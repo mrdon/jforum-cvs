@@ -103,7 +103,7 @@ import freemarker.template.SimpleHash;
 
 /**
  * @author Rafael Steil
- * @version $Id: PostAction.java,v 1.163.2.3 2007/01/23 20:57:10 lazee Exp $
+ * @version $Id: PostAction.java,v 1.163.2.4 2007/02/07 00:58:57 rafaelsteil Exp $
  */
 public class PostAction extends Command 
 {
@@ -980,10 +980,9 @@ public class PostAction extends Command
 		}
 		
 		UserSession us = SessionFacade.getUserSession();
-		User u = new User();
+		User u = DataAccessDriver.getInstance().newUserDAO().selectById(us.getUserId());
 		
 		if ("1".equals(this.request.getParameter("quick")) && SessionFacade.isLogged()) {
-			u = DataAccessDriver.getInstance().newUserDAO().selectById(us.getUserId());
 			this.request.addParameter("notify", u.isNotifyOnMessagesEnabled() ? "1" : null);
 			this.request.addParameter("attach_sig", u.getAttachSignatureEnabled() ? "1" : "0");
 		}
