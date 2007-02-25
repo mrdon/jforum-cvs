@@ -80,7 +80,7 @@ import freemarker.template.Template;
  * JForum Web Installer.
  * 
  * @author Rafael Steil
- * @version $Id: InstallAction.java,v 1.60 2006/11/12 17:53:09 rafaelsteil Exp $
+ * @version $Id: InstallAction.java,v 1.60.2.1 2007/02/25 12:44:59 rafaelsteil Exp $
  */
 public class InstallAction extends Command
 {
@@ -263,26 +263,6 @@ public class InstallAction extends Command
 		}
 		catch (Exception e) {
 			logger.warn("Error while working on modulesMapping.properties: " + e);
-		}
-		
-		try {
-			// Index renaming
-			String rootDirPath = SystemGlobals.getApplicationPath();
-			File rootDir = new File(rootDirPath);
-			
-			if (rootDir.canWrite()) {
-				String newIndex = rootDirPath + "/__index.redirect";
-				File newIndexFile = new File(newIndex);
-				
-				if (newIndexFile.exists()) {
-					newIndexFile.renameTo(new File(rootDirPath + "/index.htm"));
-				}
-				
-				this.addToSessionAndContext("indexFixed", "true");
-			}
-		}
-		catch (Exception e) {
-			logger.warn("Error while creating index.htm: " + e, e);
 		}
 	}
 	

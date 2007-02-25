@@ -54,13 +54,7 @@ td.cathead,td.catsides,td.catleft,td.catright,td.catbottom { background-image: u
 							<#assign mappingFixed = true/>
 						</#if>
 
-						<#if indexFixed?default("false") == "false">
-							<#assign indexFixed = false/>
-						<#else>
-							<#assign indexFixed = true/>
-						</#if>
-
-						<#if !mappingFixed || !indexFixed>
+						<#if !mappingFixed>
 							<p>
 							<b>
 							${I18n.getMessage("${lang}", "Install.cleanFiles")}:<br/>
@@ -76,11 +70,6 @@ td.cathead,td.catsides,td.catleft,td.catright,td.catbottom { background-image: u
 											${I18n.getMessage("${lang}", "Install.removeMapping")}:<br/>
 											<div align="center"><b>install = net.jforum.view.install.InstallAction</b></div>
 											<br/>
-										</#if>
-
-										<#if !indexFixed>
-											<img src="${contextPath}/images/smilies/d6741711aa045b812616853b5507fd2a.gif" border="0" align="middle"> 
-											${I18n.getMessage("${lang}", "Install.renameIndex")}
 										</#if>
 										</span>
 									</td>
@@ -109,7 +98,7 @@ td.cathead,td.catsides,td.catleft,td.catright,td.catbottom { background-image: u
 							<br/>
 						</#if>
 
-						<p><input type="button" name="click" value="${clickHere}" onClick="document.location = '${forumLink}';" <#if !mappingFixed || !indexFixed>disabled style="color: gray;"</#if>></p>
+						<p><input type="button" name="click" value="${clickHere}" onClick="document.location = '${forumLink}';" <#if !mappingFixed>disabled style="color: gray;"</#if>></p>
 						</form>
 						<br/>
 						</span>

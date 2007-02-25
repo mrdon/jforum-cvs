@@ -134,8 +134,8 @@ INSERT INTO jforum_role_values ( role_id, role_value) VALUES (37, '1');
 -- 
 -- Enable HTML
 --
-INSERT INTO jforum_roles (role_id, name, group_id) VALUES (38, 'perm_html_disabled', 1, 0);
-INSERT INTO jforum_roles (role_id, name, group_id) VALUES (39, 'perm_html_disabled', 2, 0);
+INSERT INTO jforum_roles (role_id, name, group_id) VALUES (38, 'perm_html_disabled', 1);
+INSERT INTO jforum_roles (role_id, name, group_id) VALUES (39, 'perm_html_disabled', 2);
 
 INSERT INTO jforum_role_values ( role_id, role_value) VALUES (38, '1');
 INSERT INTO jforum_role_values ( role_id, role_value) VALUES (39, '1');
