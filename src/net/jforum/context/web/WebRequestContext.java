@@ -73,7 +73,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Rafael Steil
- * @version $Id: WebRequestContext.java,v 1.14 2007/09/25 23:38:48 rafaelsteil Exp $
+ * @version $Id: WebRequestContext.java,v 1.15 2007/10/15 15:16:15 andowson Exp $
  */
 public class WebRequestContext extends HttpServletRequestWrapper implements RequestContext
 {
@@ -195,11 +195,11 @@ public class WebRequestContext extends HttpServletRequestWrapper implements Requ
 				}
 			}
 			
-			this.addParameter("module", urlModel[moduleIndex]);
+			this.addOrReplaceParameter("module", urlModel[moduleIndex]);
 			this.addParameter("action", urlModel[actionIndex]);
 		}
 		else {
-			this.addParameter("module", null);
+			this.addOrReplaceParameter("module", null);
 			this.addParameter("action", null);
 		}
 	}
