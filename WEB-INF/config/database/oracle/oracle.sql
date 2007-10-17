@@ -24,7 +24,7 @@ ConfigModel.insert = INSERT INTO jforum_config (config_id, config_name, config_v
 UserModel.addNew = INSERT INTO jforum_users (user_id, username, user_password, user_email, user_regdate, user_actkey, rank_id) VALUES (jforum_users_seq.nextval, ?, ?, ?, ?, ?, 0)
 
 UserModel.selectAllByLimit = SELECT * FROM ( \
-        SELECT user_email, user_id, user_posts, user_regdate, username, deleted, user_karma, user_from, user_website, user_viewemail, ROW_NUMBER() OVER(ORDER BY username) - 1 LINENUM  \
+        SELECT user_email, user_id, user_posts, user_regdate, username, deleted, user_karma, user_from, user_website, user_viewemail, ROW_NUMBER() OVER(ORDER BY username) - 1 LINENUM \
         FROM jforum_users ORDER BY username \
         ) \
         WHERE LINENUM >= ? AND LINENUM < ?
@@ -54,7 +54,7 @@ UserModel.selectAllByGroup = SELECT * FROM ( \
 # PostModel
 # #############
 PostModel.selectLatestByForumForRSS = SELECT * FROM ( \
-		SELECT p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username,
+		SELECT p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username, \
 		ROW_NUMBER() OVER(ORDER BY t.topic_id DESC) - 1 LINENUM \
 		FROM jforum_topics t, jforum_posts p, jforum_posts_text pt, jforum_users u \
 		WHERE p.post_id = t.topic_first_post_id \
@@ -69,7 +69,7 @@ PostModel.selectLatestByForumForRSS = SELECT * FROM ( \
 	
 PostModel.selectHotForRSS = SELECT * FROM ( \
 		SELECT t.topic_id, t.topic_title AS subject, p.post_id, t.forum_id, pt.post_text, p.post_time, p.user_id, u.username, \
-		ROW_NUMBER() OVER(ORDER BY topic_first_post_id DESC) \
+		ROW_NUMBER() OVER(ORDER BY topic_first_post_id DESC) - 1 LINENUM \
 		FROM jforum_topics t, jforum_posts p, jforum_posts_text pt, jforum_users u \
 		WHERE p.post_id = t.topic_first_post_id \
 		AND p.topic_id = t.topic_id \
@@ -116,18 +116,6 @@ PostModel.selectByUserByLimit = SELECT * FROM ( \
 ) \
 WHERE LINENUM >= ? AND LINENUM < ?
 
-TopicModel.selectByUserByLimit = SELECT * FROM ( \
-    SELECT t.*, p.user_id AS last_user_id, p.post_time, 0 AS attach, \
-    ROW_NUMBER() OVER(ORDER BY topic_last_post_id ASC) - 1 LINENUM \
-	FROM jforum_topics t, jforum_posts p \
-	WHERE p.post_id = t.topic_last_post_id \
-	AND t.user_id = ? \
-	AND p.need_moderate = 0 \
-	AND t.forum_id IN(:fids:) \
-	ORDER BY t.topic_last_post_id DESC \
-) \
-WHERE LINENUM >= ? AND LINENUM < ?
-
 # #############
 # PollModel
 # #############
@@ -154,7 +142,10 @@ TopicModel.addNew = INSERT INTO jforum_topics (topic_id, forum_id, topic_title, 
 # Ignores attachements (0 as attach), but goes two orders of magnitude higher...
 ##########################################################################################
 TopicModel.selectAllByForumByLimit = SELECT * FROM ( \
-       SELECT t.*, p.user_id AS last_user_id, p.post_time, 0 AS attach,  \
+       SELECT t.*, p.user_id AS last_user_id, p.post_time, (SELECT SUM(p.attach) \
+        FROM jforum_posts p \
+        WHERE p.topic_id = t.topic_id \
+        AND p.need_moderate = 0) AS attach, \
        ROW_NUMBER() OVER(ORDER BY topic_type DESC, topic_last_post_id DESC) - 1 LINENUM \
        FROM jforum_topics t, jforum_posts p \
        WHERE (t.forum_id = ? OR t.topic_moved_id = ?) \
@@ -162,6 +153,21 @@ TopicModel.selectAllByForumByLimit = SELECT * FROM ( \
        AND p.need_moderate = 0 \
 	) \
 	WHERE LINENUM >= ? AND LINENUM < ?
+
+TopicModel.selectByUserByLimit = SELECT * FROM ( \
+    SELECT t.*, p.user_id AS last_user_id, p.post_time, (SELECT SUM(p.attach) \
+        FROM jforum_posts p \
+        WHERE p.topic_id = t.topic_id \
+        AND p.need_moderate = 0) AS attach, \
+    ROW_NUMBER() OVER(ORDER BY topic_last_post_id ASC) - 1 LINENUM \
+	FROM jforum_topics t, jforum_posts p \
+	WHERE p.post_id = t.topic_last_post_id \
+	AND t.user_id = ? \
+	AND p.need_moderate = 0 \
+	AND t.forum_id IN(:fids:) \
+	ORDER BY t.topic_last_post_id DESC \
+) \
+WHERE LINENUM >= ? AND LINENUM < ?
 
 TopicModel.selectRecentTopicsByLimit = SELECT * FROM ( \
        SELECT t.*, p.user_id AS last_user_id, p.post_time, p.attach AS attach,  \
