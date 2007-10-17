@@ -30,7 +30,7 @@ UserModel.login = SELECT user_id FROM jforum_users WHERE LCASE(username) = LCASE
 # #############
 PostModel.lastGeneratedPostId = SELECT max(post_id) from jforum_posts
 	
-PostModel.selectLatestByForumForRSS = SELECT LIMIT 0 ? p.topic_id, p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username \
+PostModel.selectLatestByForumForRSS = SELECT LIMIT 0 ? p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username \
 	FROM jforum_topics t, jforum_posts p, jforum_posts_text pt, jforum_users u \
 	WHERE p.post_id = t.topic_first_post_id \
 	AND p.topic_id = t.topic_id \

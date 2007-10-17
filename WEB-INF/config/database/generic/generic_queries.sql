@@ -138,7 +138,7 @@ UserModel.getUsername = SELECT username FROM jforum_users WHERE user_id = ?
 # #############
 # PostModel
 # #############
-PostModel.selectLatestByForumForRSS = SELECT p.topic_id, p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username \
+PostModel.selectLatestByForumForRSS = SELECT p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username \
 	FROM jforum_topics t, jforum_posts p, jforum_posts_text pt, jforum_users u \
 	WHERE p.post_id = t.topic_first_post_id \
 	AND p.topic_id = t.topic_id \

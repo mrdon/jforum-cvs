@@ -54,7 +54,7 @@ UserModel.selectAllByGroup = SELECT * FROM ( \
 # PostModel
 # #############
 PostModel.selectLatestByForumForRSS = SELECT * FROM ( \
-		SELECT p.topic_id, p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username,
+		SELECT p.topic_id, p.post_id, p.forum_id, pt.post_subject AS subject, pt.post_text, p.post_time, p.user_id, u.username,
 		ROW_NUMBER() OVER(ORDER BY t.topic_id DESC) - 1 LINENUM \
 		FROM jforum_topics t, jforum_posts p, jforum_posts_text pt, jforum_users u \
 		WHERE p.post_id = t.topic_first_post_id \
