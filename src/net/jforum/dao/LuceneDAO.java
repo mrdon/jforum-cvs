@@ -48,7 +48,7 @@ import java.util.List;
 
 /**
  * @author Rafael Steil
- * @version $Id: LuceneDAO.java,v 1.5 2007/09/01 05:46:53 rafaelsteil Exp $
+ * @version $Id: LuceneDAO.java,v 1.6 2007/10/17 04:36:13 rafaelsteil Exp $
  */
 public interface LuceneDAO
 {
@@ -59,4 +59,6 @@ public interface LuceneDAO
 	public int firstPostIdByDate(Date date);
 	
 	public int lastPostIdByDate(Date date);
+
+	public int firstPostId();
 }

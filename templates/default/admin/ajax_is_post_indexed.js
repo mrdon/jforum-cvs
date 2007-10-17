@@ -1,5 +1,5 @@
 <#if !doc?exists>
-	alert("${I18n.getMessage("no")}");
+	alert("${I18n.getMessage("No")}");
 <#else>
 	var message = "Post ID: ${doc.get("post.id")}\n";
 	message += "Topic ID: ${doc.get("topic.id")}\n";

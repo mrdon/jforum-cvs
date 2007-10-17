@@ -59,7 +59,7 @@ import org.apache.lucene.search.IndexSearcher;
 
 /**
  * @author Rafael Steil
- * @version $Id: LuceneReindexer.java,v 1.5 2007/09/09 16:43:55 rafaelsteil Exp $
+ * @version $Id: LuceneReindexer.java,v 1.6 2007/10/17 04:36:13 rafaelsteil Exp $
  */
 public class LuceneReindexer
 {
@@ -123,6 +123,14 @@ public class LuceneReindexer
 			int firstPostId = args.filterByMessage()
 				? args.getFirstPostId()
 				: dao.firstPostIdByDate(args.getFromDate());
+				
+			if (args.filterByMessage()) {
+				int dbFirstPostId = dao.firstPostId();
+				
+				if (firstPostId < dbFirstPostId) {
+					firstPostId = dbFirstPostId;
+				}
+			}
 				
 			int lastPostId = args.filterByMessage()
 				? args.getLastPostId()

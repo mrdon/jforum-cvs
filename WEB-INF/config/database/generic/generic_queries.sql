@@ -413,6 +413,7 @@ TopicModel.totalTopics = SELECT COUNT(1) FROM jforum_topics
 # ############
 # SearchModel
 # ############
+SearchModel.getFirstPostId = SELECT MIN(post_id) FROM jforum_posts
 SearchModel.firstPostIdByDate = SELECT post_id FROM jforum_posts WHERE post_time > ? LIMIT 1
 SearchModel.lastPostIdByDate = SELECT post_id FROM jforum_posts WHERE post_time < ? ORDER BY post_id DESC LIMIT 1
 

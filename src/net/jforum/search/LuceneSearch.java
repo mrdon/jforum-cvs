@@ -66,7 +66,7 @@ import org.apache.lucene.search.TermQuery;
 
 /**
  * @author Rafael Steil
- * @version $Id: LuceneSearch.java,v 1.38 2007/10/05 03:22:37 rafaelsteil Exp $
+ * @version $Id: LuceneSearch.java,v 1.39 2007/10/17 04:36:34 rafaelsteil Exp $
  */
 public class LuceneSearch implements NewDocumentAdded
 {
@@ -115,12 +115,8 @@ public class LuceneSearch implements NewDocumentAdded
 			Hits hit = this.search.search(new TermQuery(
 				new Term(SearchFields.Keyword.POST_ID, String.valueOf(postId))));
 			
-			
-			
 			if (hit.length() > 0) {
 				doc = hit.doc(0);
-				
-				
 			}
 		}
 		catch (IOException e) {

@@ -62,10 +62,40 @@ import net.jforum.util.preferences.SystemGlobals;
 
 /**
  * @author Rafael Steil
- * @version $Id: GenericLuceneDAO.java,v 1.12 2007/10/13 13:46:21 rafaelsteil Exp $
+ * @version $Id: GenericLuceneDAO.java,v 1.13 2007/10/17 04:36:13 rafaelsteil Exp $
  */
 public class GenericLuceneDAO implements LuceneDAO
 {
+	/**
+	 * @see net.jforum.dao.LuceneDAO#firstPostId()
+	 */
+	public int firstPostId() 
+	{
+		int postId = 0;
+		
+		PreparedStatement p = null;
+		ResultSet rs = null;
+		
+		try {
+			p = JForumExecutionContext.getConnection().prepareStatement(
+				SystemGlobals.getSql("SearchModel.getFirstPostId"));
+			
+			rs = p.executeQuery();
+			
+			if (rs.next()) {
+				postId = rs.getInt(1);
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
+		finally {
+			DbUtils.close(rs, p);
+		}
+		
+		return postId;
+	}
+	
 	/**
 	 * @see net.jforum.dao.LuceneDAO#getPostsToIndex(LuceneReindexArgs, int, int)
 	 */
