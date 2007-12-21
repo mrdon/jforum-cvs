@@ -102,6 +102,7 @@ function changeDbPort(dbName)
 	if (dbName == "mysql") port.value = 3306;
 	else if (dbName == "oracle") port.value = 1521;
 	else if (dbName == "postgresql") port.value = 5432;
+	else if (dbName == "sqlserver2000") port.value = 1433;
 	else if (dbName == "hsqldb") { 
 		port.value = "";
 		port.enabled = false;
@@ -192,6 +193,7 @@ function changeDbPort(dbName)
 								<option value="postgresql" <#if database?default("") == "postgresql">selected</#if>>PostgreSQL</option>
 								<option value="oracle" <#if database?default("") == "oracle">selected</#if>>Oracle</option>
 								<option value="hsqldb" <#if database?default("") == "hsqldb">selected</#if>>HSQLDB</option>
+								<option value="sqlserver2000" <#if database?default("") == "sqlserver2000">selected</#if>>SQL Server 2000</option>
 							</select>
 							<br>
 							<span class="gensmall">
