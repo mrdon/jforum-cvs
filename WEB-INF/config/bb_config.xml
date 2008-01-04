@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: bb_config.xml,v 1.34 2007/09/19 15:30:40 rafaelsteil Exp $ -->
+<!-- $Id: bb_config.xml,v 1.35 2008/01/04 18:07:04 andowson Exp $ -->
 <bbConfig>
 	<!-- CODE -->
 	<match name="code">
@@ -261,14 +261,14 @@
 	<!-- YouTube -->
 	<match name="youtube">
 		<regex>
-			(?i)\[youtube\]http\:\/\/www.youtube.com\/watch\?v\=(.*?)\[/youtube\]
+			(?i)\[youtube\]http\:\/\/(.*?)youtube.com\/watch\?v\=(.*?)\[/youtube\]
 		</regex>
 		<replace>
 			<![CDATA[
                 <object width="425" height="350">
-                    <param name="movie" value="http://www.youtube.com/v/$1"></param>
+                    <param name="movie" value="http://$1youtube.com/v/$2"></param>
                     <param name="wmode" value="transparent"></param>
-                    <embed src="http://www.youtube.com/v/$1" type="application/x-shockwave-flash" wmode="transparent" width="425" height="350"></embed>
+                    <embed src="http://$1youtube.com/v/$2" type="application/x-shockwave-flash" wmode="transparent" width="425" height="350"></embed>
                 </object>
                 ]]>
 		</replace>
