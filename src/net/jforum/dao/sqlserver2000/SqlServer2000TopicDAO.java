@@ -68,7 +68,7 @@ import net.jforum.util.preferences.SystemGlobals;
  * @author Dirk Rasmussen - d.rasmussen@bevis.de (2006/11/27, modifs for MS SqlServer 2005)
  * @author Andowson Chang - andowson@gmail.com (2007/12/06, fix for MS SQL Server 2000)
  * @see WEB-INF\config\database\sqlserver\sqlserver.sql (2006/11/27, MS SqlServer 2005 specific version!)
- * @version $Id: SqlServer2000TopicDAO.java,v 1.1 2007/12/21 13:03:59 andowson Exp $
+ * @version $Id: SqlServer2000TopicDAO.java,v 1.2 2008/01/22 23:52:41 rafaelsteil Exp $
  */
 public class SqlServer2000TopicDAO extends GenericTopicDAO
 {
@@ -78,7 +78,6 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 	public List selectAllByForumByLimit(int forumId, int startFrom, int count)
 	{
 		String sql = SystemGlobals.getSql("TopicModel.selectAllByForumByLimit");
-		sql = String.format(sql, startFrom + count);
 		
 		PreparedStatement p = null;
 
@@ -86,8 +85,9 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 			p = JForumExecutionContext.getConnection().prepareStatement(sql,
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
-			p.setInt(1, forumId);
+			p.setInt(1, startFrom + count);
 			p.setInt(2, forumId);
+			p.setInt(3, forumId);
 
 			return this.fillTopicsDataByLimit(p, startFrom);
 		}
@@ -105,7 +105,6 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 	public List selectByUserByLimit(int userId, int startFrom, int count)
 	{
 		String sql = SystemGlobals.getSql("TopicModel.selectByUserByLimit");
-        sql = String.format(sql, startFrom + count);
         
 		PreparedStatement p = null;
 		try {
@@ -115,7 +114,8 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 							ResultSet.TYPE_SCROLL_INSENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 
-			p.setInt(1, userId);
+			p.setInt(1, startFrom + count);
+			p.setInt(2, userId);
 
 			List list = this.fillTopicsDataByLimit(p, startFrom);
 			p = null;
@@ -234,12 +234,12 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 	public List selectRecentTopics(int limit)
 	{
 		String sql = SystemGlobals.getSql("TopicModel.selectRecentTopicsByLimit");
-		sql = String.format(sql, limit);
 		
 		PreparedStatement p = null;
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
-
+			p.setInt(1, limit);
+			
 			List list = this.fillTopicsData(p);
 			return list;
 		}
@@ -257,12 +257,12 @@ public class SqlServer2000TopicDAO extends GenericTopicDAO
 	public List selectHottestTopics(int limit)
 	{
 		String sql = SystemGlobals.getSql("TopicModel.selectHottestTopicsByLimit");
-		sql = String.format(sql, limit);
 		
 		PreparedStatement p = null;
 	    try {
 	        p = JForumExecutionContext.getConnection().prepareStatement(sql);
-	  
+	        p.setInt(1, limit);
+	        
 	        List list = this.fillTopicsData(p);
 	        p = null;
 	        return list;

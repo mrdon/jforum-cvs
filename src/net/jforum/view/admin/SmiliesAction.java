@@ -57,7 +57,7 @@ import net.jforum.view.forum.common.UploadUtils;
 
 /**
  * @author Rafael Steil
- * @version $Id: SmiliesAction.java,v 1.15 2006/08/20 22:47:44 rafaelsteil Exp $
+ * @version $Id: SmiliesAction.java,v 1.16 2008/01/22 23:52:41 rafaelsteil Exp $
  */
 public class SmiliesAction extends AdminCommand 
 {
@@ -148,14 +148,16 @@ public class SmiliesAction extends AdminCommand
 				Smilie s = dao.selectById(id);
 				dao.delete(id);
 				
-				File f = new File(SystemGlobals.getApplicationPath() 
-						+ "/"
-						+ SystemGlobals.getValue(ConfigKeys.SMILIE_IMAGE_DIR) 
-						+ "/"
-						+ s.getDiskName());
+				File smilieFile = new File(s.getDiskName());
+				
+				File fileToDelete = new File(SystemGlobals.getApplicationPath() 
+					+ "/"
+					+ SystemGlobals.getValue(ConfigKeys.SMILIE_IMAGE_DIR) 
+					+ "/"
+					+ smilieFile.getName());
 
-				if (f.exists()) {
-					f.delete();
+				if (fileToDelete.exists()) {
+					fileToDelete.delete();
 				}
 			}
 		}

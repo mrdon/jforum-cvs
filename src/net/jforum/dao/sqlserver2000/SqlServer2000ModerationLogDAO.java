@@ -68,13 +68,13 @@ public class SqlServer2000ModerationLogDAO extends GenericModerationLogDAO {
 		List l = new ArrayList();
 
 		String sql = SystemGlobals.getSql("ModerationLog.selectAll");
-		sql = String.format(sql, start + count);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
 		
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
+			p.setInt(1, start + count);
 
 			rs = p.executeQuery();
 

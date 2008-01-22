@@ -62,7 +62,7 @@ import net.jforum.util.preferences.SystemGlobals;
  * @author Dirk Rasmussen - d.rasmussen@bevis.de (2006/11/27, modifs for MS SqlServer 2005)
  * @author Andowson Chang - andowson@gmail.com (2007/12/06, fix for MS SQL Server 2000)
  * @see WEB-INF\config\database\sqlserver\sqlserver.sql (2006/11/27, MS SqlServer 2005 specific version!)
- * @version $Id: SqlServer2000PostDAO.java,v 1.1 2007/12/21 13:03:59 andowson Exp $
+ * @version $Id: SqlServer2000PostDAO.java,v 1.2 2008/01/22 23:52:41 rafaelsteil Exp $
  */
 public class SqlServer2000PostDAO extends GenericPostDAO
 {
@@ -74,14 +74,14 @@ public class SqlServer2000PostDAO extends GenericPostDAO
 		List l = new ArrayList();
 
 		String sql = SystemGlobals.getSql("PostModel.selectAllByTopicByLimit");
-		sql = String.format(sql, startFrom + count);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
 		
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
-			p.setInt(1, topicId);
+			p.setInt(1, startFrom + count);
+			p.setInt(2, topicId);
 
 			rs = p.executeQuery();
 
@@ -106,15 +106,14 @@ public class SqlServer2000PostDAO extends GenericPostDAO
 	{
 		String sql = SystemGlobals.getSql("PostModel.selectByUserByLimit");
 		sql = sql.replaceAll(":fids:", ForumRepository.getListAllowedForums());
-		sql = String.format(sql, startFrom + count);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
 		
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
-
-			p.setInt(1, userId);
+			p.setInt(1, startFrom + count);
+			p.setInt(2, userId);
 
 			rs = p.executeQuery();
 			List l = new ArrayList();
@@ -138,14 +137,14 @@ public class SqlServer2000PostDAO extends GenericPostDAO
 		List l = new ArrayList();
 
 		String sql = SystemGlobals.getSql("PostModel.selectLatestByForumForRSS");
-		sql = String.format(sql, limit);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
 		
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
-			p.setInt(1, forumId);
+			p.setInt(1, limit);
+			p.setInt(2, forumId);
 			
 			rs = p.executeQuery();
 			
@@ -170,13 +169,13 @@ public class SqlServer2000PostDAO extends GenericPostDAO
 		List l = new ArrayList();
 
 		String sql = SystemGlobals.getSql("PostModel.selectHotForRSS");
-		sql = String.format(sql, limit);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
 		
 		try {
 			p = JForumExecutionContext.getConnection().prepareStatement(sql);
+			p.setInt(1, limit);
 			
 			rs = p.executeQuery();
 			

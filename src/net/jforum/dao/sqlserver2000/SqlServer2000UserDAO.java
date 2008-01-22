@@ -53,27 +53,22 @@ import net.jforum.exceptions.DatabaseException;
 import net.jforum.util.DbUtils;
 import net.jforum.util.preferences.SystemGlobals;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * @author Andre de Andrade da Silva - andre.de.andrade@gmail.com
  * @author Dirk Rasmussen - d.rasmussen@bevis.de (2006/11/27, modifs for MS SqlServer 2005)
  * @author Andowson Chang - andowson@gmail.com (2007/12/06, fix for MS SQL Server 2000)
  * @see WEB-INF\config\database\sqlserver\sqlserver.sql (2006/11/27, MS SqlServer 2005 specific version!)
- * @version $Id: SqlServer2000UserDAO.java,v 1.1 2007/12/21 13:03:59 andowson Exp $
+ * @version $Id: SqlServer2000UserDAO.java,v 1.2 2008/01/22 23:52:41 rafaelsteil Exp $
  */
 public class SqlServer2000UserDAO extends GenericUserDAO
 {
-	private static final Logger logger = Logger.getLogger(SqlServer2000UserDAO.class);
-
 	/**
 	 * @see net.jforum.dao.UserDAO#selectAll(int, int)
 	 */
 	public List selectAll(int startFrom, int count)
 	{
 		String sql = SystemGlobals.getSql("UserModel.selectAllByLimit");
-		sql = String.format(sql, startFrom + count);
 		
 		PreparedStatement p = null;
 		ResultSet rs = null;
@@ -81,8 +76,10 @@ public class SqlServer2000UserDAO extends GenericUserDAO
 		try {
 			if (count > 0) {
 				p = JForumExecutionContext.getConnection().prepareStatement(sql, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_READ_ONLY);
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+				p.setInt(1, startFrom + count);
+				
 				rs = p.executeQuery();
 				rs.absolute(startFrom);
 			}
