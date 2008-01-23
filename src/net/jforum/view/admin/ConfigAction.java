@@ -44,6 +44,7 @@ package net.jforum.view.admin;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -59,6 +60,7 @@ import net.jforum.exceptions.ForumException;
 import net.jforum.repository.ForumRepository;
 import net.jforum.repository.TopicRepository;
 import net.jforum.util.I18n;
+import net.jforum.util.SafeHtml;
 import net.jforum.util.preferences.ConfigKeys;
 import net.jforum.util.preferences.SystemGlobals;
 import net.jforum.util.preferences.TemplateKeys;
@@ -66,7 +68,7 @@ import freemarker.template.SimpleHash;
 
 /**
  * @author Rafael Steil
- * @version $Id: ConfigAction.java,v 1.21 2007/07/28 14:17:10 rafaelsteil Exp $
+ * @version $Id: ConfigAction.java,v 1.22 2008/01/23 01:27:16 rafaelsteil Exp $
  */
 public class ConfigAction extends AdminCommand 
 {
@@ -130,18 +132,18 @@ public class ConfigAction extends AdminCommand
 	{
 		Properties p = new Properties();
 
-		Enumeration e = this.request.getParameterNames();
-		while (e.hasMoreElements()) {
-			String name = (String) e.nextElement();
+		for (Enumeration e = this.request.getParameterNames(); e.hasMoreElements(); ) {
+			String formFieldName = (String) e.nextElement();
 
-			if (name.startsWith("p_")) {
-				p.setProperty(name.substring(name.indexOf('_') + 1), this.request.getParameter(name));
+			if (formFieldName.startsWith("p_")) {
+				String propertyKey = formFieldName.substring(formFieldName.indexOf('_') + 1);
+				p.setProperty(propertyKey,  this.safeValue(propertyKey, this.request.getParameter(formFieldName)));
 			}
 		}
 		
 		return p;
 	}
-	
+
 	void updateData(Properties p)
 	{
 		int oldTopicsPerPage = SystemGlobals.getIntValue(ConfigKeys.TOPICS_PER_PAGE);
@@ -168,5 +170,30 @@ public class ConfigAction extends AdminCommand
 				}
 			}
 		}
+	}
+	
+	private String safeValue(String name, String value) 
+	{
+		if (name.equals("homepage.link") || name.equals("forum.link")) {
+			// Little trick to try to enforce a 'real' url. We don't care
+			// if it throws an exception, because no buggy data is excepted, ever
+			try {
+				new URL(value).toURI();
+			}
+			catch (Exception e) {
+				throw new ForumException(e);
+			}
+			
+			return value;
+		}
+		else if (name.equals("encoding") 
+			|| name.equals("forum.name")
+			|| name.equals("forum.page.metatag.description")
+			|| name.equals("forum.page.metatag.keywords")
+			|| name.equals("forum.page.title")) {
+			value = new SafeHtml().makeSafe(value);
+		}
+		
+		return value;
 	}
 }

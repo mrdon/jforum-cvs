@@ -42,10 +42,14 @@
  */
 package net.jforum.view.forum.common;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import net.jforum.JForumExecutionContext;
 import net.jforum.SessionFacade;
@@ -66,7 +70,7 @@ import org.apache.log4j.Logger;
 
 /**
  * @author Rafael Steil
- * @version $Id: UserCommon.java,v 1.29 2007/09/19 14:08:57 rafaelsteil Exp $
+ * @version $Id: UserCommon.java,v 1.30 2008/01/23 01:27:16 rafaelsteil Exp $
  */
 public class UserCommon 
 {
@@ -125,6 +129,7 @@ public class UserCommon
 		u.setNotifyText("1".equals(request.getParameter("notify_text")));
 		
 		String website = safeHtml.makeSafe(request.getParameter("website"));
+		
 		if (!StringUtils.isEmpty(website) && !website.toLowerCase().startsWith("http://")) {
 			website = "http://" + website;
 		}
@@ -154,12 +159,19 @@ public class UserCommon
 		}
 		
 		if (request.getParameter("avatardel") != null) {
-			File f = new File(SystemGlobals.getApplicationPath() + "/images/avatar/"+ u.getAvatar());
-			f.delete();
+			File avatarFile = new File(u.getAvatar());
+			
+			File fileToDelete = new File(SystemGlobals.getApplicationPath() 
+				+ "/images/avatar/"
+				+ avatarFile.getName());
+			
+			if (fileToDelete.exists()) {
+				fileToDelete.delete();
+			}
 			
 			u.setAvatar(null);
 		}
-	
+		
 		if (request.getObjectParameter("avatar") != null) {
 			try {
 				UserCommon.handleAvatar(u);
@@ -170,9 +182,26 @@ public class UserCommon
 			}
 		} else if (SystemGlobals.getBoolValue(ConfigKeys.AVATAR_ALLOW_EXTERNAL_URL)) {
 			String avatarUrl = request.getParameter("avatarUrl");
+			
 			if (!StringUtils.isEmpty(avatarUrl)) {
 				if (avatarUrl.toLowerCase().startsWith("http://")) {
-					u.setAvatar(avatarUrl);
+					
+					try {
+						Image image = ImageIO.read(new URL(avatarUrl));
+						
+						if (image != null) {
+							if (image.getWidth(null) > SystemGlobals.getIntValue(ConfigKeys.AVATAR_MAX_WIDTH)
+								|| image.getHeight(null) > SystemGlobals.getIntValue(ConfigKeys.AVATAR_MAX_HEIGHT)) {
+								errors.add(I18n.getMessage("User.avatarTooBig"));
+							}
+							else {
+								u.setAvatar(avatarUrl);
+							}
+						}
+					}
+					catch (Exception e) {
+						errors.add(I18n.getMessage("User.avatarUploadError"));
+					}
 				}
 				else {
 					errors.add(I18n.getMessage("User.avatarUrlShouldHaveHttp"));
@@ -182,11 +211,12 @@ public class UserCommon
 		
 		if (errors.size() == 0) {
 			um.update(u);
+			
+			if (SessionFacade.getUserSession().getUserId() == userId) {
+			    SessionFacade.getUserSession().setLang(u.getLang());
+			}
 		}
 		
-		if (SessionFacade.getUserSession().getUserId() == userId) {
-		    SessionFacade.getUserSession().setLang(u.getLang());
-		}
 		return errors;
 	}
 
