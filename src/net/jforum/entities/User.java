@@ -40,7 +40,7 @@
  * The JForum Project
  * http://www.jforum.net 
  * 
- * $Id: User.java,v 1.21 2007/07/25 03:08:15 rafaelsteil Exp $
+ * $Id: User.java,v 1.22 2008/03/14 02:56:08 andowson Exp $
  */
 package net.jforum.entities;
 
@@ -153,7 +153,7 @@ public class User implements Serializable
 		this.lastName = name;
 	}
 	
-	public String getLastNmame()
+	public String getLastName()
 	{
 		return this.lastName;
 	}
