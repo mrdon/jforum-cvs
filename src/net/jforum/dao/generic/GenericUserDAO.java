@@ -66,7 +66,7 @@ import net.jforum.util.preferences.SystemGlobals;
 
 /**
  * @author Rafael Steil
- * @version $Id: GenericUserDAO.java,v 1.29 2007/09/21 17:26:09 rafaelsteil Exp $
+ * @version $Id: GenericUserDAO.java,v 1.30 2008/06/07 05:29:40 andowson Exp $
  */
 public class GenericUserDAO extends AutoKeys implements UserDAO
 {
@@ -206,7 +206,7 @@ public class GenericUserDAO extends AutoKeys implements UserDAO
 		u.setViewOnlineEnabled(rs.getInt("user_viewonline") == 1);
 		u.setPassword(rs.getString("user_password"));
 		u.setViewEmailEnabled(rs.getInt("user_viewemail") == 1);
-		u.setViewOnlineEnabled(rs.getInt("user_allow_viewonline") == 1);
+		u.setViewOnlineEnabled(rs.getInt("user_viewonline") == 1);
 		u.setAvatarEnabled(rs.getInt("user_allowavatar") == 1);
 		u.setBbCodeEnabled(rs.getInt("user_allowbbcode") == 1);
 		u.setHtmlEnabled(rs.getInt("user_allowhtml") == 1);
